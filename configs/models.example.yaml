@@ -1,0 +1,15 @@
+# Example model catalog for routing + cost accounting.
+# You MUST edit pricing to match your provider's current prices.
+# All prices are in USD per 1M tokens (input/output), used to compute cost from token usage.
+providers:
+  openai:
+    api_base: "https://api.openai.com/v1"
+models:
+  gpt-4o-mini:
+    provider: openai
+    price_per_million_input: 0.15   # <-- EDIT
+    price_per_million_output: 0.60  # <-- EDIT
+  gpt-5-mini:
+    provider: openai
+    price_per_million_input: 0.00   # <-- EDIT
+    price_per_million_output: 0.00  # <-- EDIT

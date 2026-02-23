@@ -1,0 +1,10 @@
+numpy
+pandas
+pyarrow
+scikit-learn
+tqdm
+pyyaml
+huggingface_hub
+sentence-transformers
+openai
+matplotlib
