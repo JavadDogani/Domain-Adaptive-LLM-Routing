@@ -46,13 +46,13 @@ pip install -r requirements.txt
 
 ## Quickstart: End-to-End Steps (1–6)
 
-Step 1 — Install
+## Step 1 — Install
 - Install Python dependencies.
 Command:
   pip install -r requirements.txt
 
 
-Step 2 — Download + Prepare RouterBench (raw)
+## Step 2 — Download + Prepare RouterBench (raw)
 - Download routerbench_raw.pkl from HuggingFace and convert it into a long-form Parquet table.
 - Output: data/routerbench_raw_long.parquet
   Columns: qid, prompt, domain, model, response, quality, cost
