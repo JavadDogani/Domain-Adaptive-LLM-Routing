@@ -38,7 +38,7 @@ The pipeline produces:
 
 Create and activate an environment:
 
-```bash
+
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -77,40 +77,28 @@ Command:
 - Output: data/stream.jsonl
 Command:
   python scripts/build_stream.py \
-    --data data/routerbench_raw_long.parquet \
-    --split test \
-    --out data/stream.jsonl \
-    --rate_qps 3 \
-    --burst "10@20,2@120" \
-    --max_queries 1500
+  --data data/routerbench_raw_long.parquet \
+  --split test \
+  --ood_holdout "grade-school-math,mbpp" \
+  --out data/stream.jsonl \
+  --rate_qps 3 \
+  --max_queries 1500 \
+  --time_warp 200
 
 
-## Step 4 — (Optional) Domain Detection via a Small LLM
-- RouterBench already provides a domain/task label (domain = eval_name).
-- If you want a coarse taxonomy (math/code/qa/…), label each prompt with a small LLM.
-- Requires: OPENAI_API_KEY
-- Output: data/stream_labeled.jsonl
-Commands:
-  export OPENAI_API_KEY="..."
-  python scripts/label_domain_openai.py \
-    --stream data/stream.jsonl \
-    --out data/stream_labeled.jsonl \
-    --model gpt-4o-mini
-
-
-## Step 5 — (Optional) Collect Measured Latency Telemetry
+## Step 4 — Collect Measured Latency Telemetry
 - Execute real model calls for streamed prompts and log wall-clock latency (and token usage if available).
 - Requires: OPENAI_API_KEY + configured models in configs/models.yaml
 - Output: data/latency_log.jsonl
 Command:
-  export OPENAI_API_KEY="..."
-  python scripts/collect_latency_openai.py \
-    --stream data/stream.jsonl \
-    --models gpt-4o-mini gpt-5-mini \
-    --config configs/models.yaml \
-    --out data/latency_log.jsonl \
-    --max_output_tokens 256 \
-    --per_event_models 1
+  python scripts/simulate_latency.py \
+  --data data/routerbench_raw_long.parquet \
+  --stream data/stream_ood.jsonl \
+  --out data/latency_eff.jsonl \
+  --out_base data/latency_base.jsonl \
+  --token_method max \
+  --chars_per_token 4.0 \
+  --noise_cv 0.10
 
 Note:
 - RouterBench quality/cost correspond to its benchmark model zoo.
@@ -119,22 +107,30 @@ Note:
   (ii) add an explicit alignment layer.
 
 
-## Step 6 — Run Routing Experiments + Generate Metrics
+## Step 5 — Run Routing Experiments + Generate Metrics
 - Run routing evaluation on IID or OOD splits.
 - Produces aggregate metrics and per-domain metrics (and plots if enabled).
-- Outputs: results_latency/ (or your chosen --results_dir)
+- Outputs: results_dacr/ (or your chosen --results_dir)
   - metrics.csv
   - metrics_by_domain.csv
   - calibration_ece.csv
   - plots (optional)
 Command (example OOD holdout using domains present in RouterBench raw):
-  python scripts/run_experiment.py \
-    --data data/routerbench_raw_long.parquet \
-    --latency_log data/latency_log.jsonl \
-    --results_dir results_latency \
-    --ood_holdout "grade-school-math,mbpp" \
-    --tau_seconds 30 \
-    --lambdas "0.05,0.1,0.2"
+    python scripts/run_experiment.py \
+  --data data/routerbench_raw_long.parquet \
+  --latency_log data/latency_eff.jsonl \
+  --results_dir results_dacr \
+  --ood_holdout "grade-school-math,mbpp" \
+  --tau_seconds 10 \
+  --lambdas "1,5,10,20" \
+  --lambda_lat 1.0 \
+  --dacr_lambda_lat 1.0 \
+  --dacr_budget_cost 0.0055 \
+  --dacr_budget_viol 0.10 \
+  --dacr_mu_lr 0.05 \
+  --dacr_cal_lr 0.05 \
+  --dacr_delay 10 \
+  --dacr_p_miss 0.3
 
 ## Check outputs:
   ls -lh results_latency
