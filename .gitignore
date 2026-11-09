@@ -1,0 +1,22 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments and secrets
+.venv/
+venv/
+.env
+
+# Editors / OS / notebooks
+.ipynb_checkpoints/
+.idea/
+.vscode/
+.DS_Store
