@@ -1,5 +1,9 @@
 # DACR RouterBench Pipeline (Domain-Adaptive Calibrated Routing)
 
+> [!IMPORTANT]
+> **This repository is archived and superseded by [domain-adaptive-calibrated-routing](https://github.com/JavadDogani/domain-adaptive-calibrated-routing).**
+> The new repository is a full rewrite of this pipeline: an installable `dacr` package and CLI, online budget pacing with delayed feedback, an optional contextual bandit, real-latency profiling of OpenAI-compatible endpoints, results on RouterBench, tests and CI. Please use it instead; this code is kept only for reference.
+
 This repository contains an end-to-end, reproducible pipeline for evaluating **LLM routing** under **accuracy–cost–latency** trade-offs with a focus on **OOD robustness via domain-adaptive calibration**. It is built around the **RouterBench (raw)** benchmark, which provides per-(query, model) **quality/performance** scores and **cost** labels, and it optionally attaches **measured latency telemetry** from real executions.
 
 The pipeline produces:
